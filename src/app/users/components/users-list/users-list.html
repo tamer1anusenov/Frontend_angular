@@ -1,0 +1,40 @@
+<h2>Users</h2>
+<input
+type="text" placeholder="Search users..." [formControl]="searchControl"/>
+
+@if (loading) {
+  <p>Loading...</p>
+}
+
+<h3>Add user</h3>
+
+<input
+  type="text"
+  placeholder="Name"
+  [(ngModel)]="newUserName"
+/>
+
+<input
+  type="email"
+  placeholder="Email"
+  [(ngModel)]="newUserEmail"
+/>
+
+<button (click)="addUser()">Add</button>
+
+
+@if (error) {
+  <p style="color: red">Failed to load users</p>
+}
+
+@if (!loading && !error && filteredUsers.length === 0) {
+  <p>No users found</p>
+}
+
+@if (!loading && !error && filteredUsers.length > 0) {
+  <ul>
+    @for (user of filteredUsers; track user.id) {
+      <li>{{ user.name }} ({{ user.email }})</li>
+    }
+  </ul>
+}

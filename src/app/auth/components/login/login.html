@@ -1,0 +1,23 @@
+<h2>Login</h2>
+
+<form (ngSubmit)="login()">
+  <input
+    type="text"
+    placeholder="Username"
+    [(ngModel)]="username"
+    name="username"
+  />
+
+  <input
+    type="password"
+    placeholder="Password"
+    [(ngModel)]="password"
+    name="password"
+  />
+
+  <button type="submit">Login</button>
+
+  <p *ngIf="error" style="color: red">
+    Invalid credentials
+  </p>
+</form>

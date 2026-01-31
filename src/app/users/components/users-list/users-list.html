@@ -1,44 +1,60 @@
 
 
-<div class="container"> 
-<h2>Users</h2>
-<input
-type="text" placeholder="Search users..." [formControl]="searchControl"/>
+<div class="container">
+  <h2>Список пользователей</h2>
 
-@if (loading) {
-  <p>Loading...</p>
-}
+  <!-- Поиск -->
+  <div class="search-box">
+    <input
+      type="text"
+      placeholder="Поиск пользователей..."
+      [formControl]="searchControl"
+      class="search-input"
+    />
+  </div>
 
-<h3>Add user</h3>
+  <!-- Добавление пользователя -->
+  <div class="add-user-form">
+    <h3>Добавить пользователя</h3>
+    <div class="form-group">
+      <input type="text" placeholder="Имя" [(ngModel)]="newUserName" />
+      <input type="email" placeholder="Email" [(ngModel)]="newUserEmail" />
+      <button (click)="addUser()" [disabled]="!newUserName || !newUserEmail">Добавить</button>
+    </div>
+  </div>
 
-<input
-  type="text"
-  placeholder="Name"
-  [(ngModel)]="newUserName"
-/>
+  <hr />
 
-<input
-  type="email"
-  placeholder="Email"
-  [(ngModel)]="newUserEmail"
-/>
+  <!-- ЛОГИКА СОСТОЯНИЙ -->
 
-<button (click)="addUser()">Add</button>
+  <div *ngIf="userService.loading()" class="state-container loader">
+    <div class="spinner"></div>
+    <p>Загрузка данных...</p>
+  </div>
+
+  <div *ngIf="userService.error()" class="state-container error">
+    <p>⚠️ {{ userService.error() }}</p>
+    <button (click)="userService.loadUsers()">Попробовать снова</button>
+  </div>
+
+  <div *ngIf="!userService.loading() && !userService.error()">
+    <div *ngIf="filteredUsers.length === 0" class="state-container empty">
+      <p>Пользователи не найдены</p>
+    </div>
+
+    <ul *ngIf="filteredUsers.length > 0" class="users-list">
+      <li *ngFor="let user of filteredUsers; trackBy: trackById" class="user-item">
+        <div class="user-info">
+          <span class="user-name">{{ user.name }}</span>
+          <span class="user-email">{{ user.email }}</span>
+        </div>
+      </li>
+    </ul>
+  </div>
 
 
-@if (error) {
-  <p style="color: red">Failed to load users</p>
-}
 
-@if (!loading && !error && filteredUsers.length === 0) {
-  <p>No users found</p>
-}
 
-@if (!loading && !error && filteredUsers.length > 0) {
-  <ul>
-    @for (user of filteredUsers; track user.id) {
-      <li>{{ user.name }} ({{ user.email }})</li>
-    }
-  </ul>
-}
+
+
 </div>

@@ -1,23 +1,46 @@
-<h2>Login</h2>
+<div class="page">
+  <div class="login-wrapper">
 
-<form (ngSubmit)="login()">
-  <input
-    type="text"
-    placeholder="Username"
-    [(ngModel)]="username"
-    name="username"
-  />
+    <div class="login-header">
+      <h1>SPA application</h1>
+      <p>Войдите, чтобы управлять списком пользователей</p>
+    </div>
 
-  <input
-    type="password"
-    placeholder="Password"
-    [(ngModel)]="password"
-    name="password"
-  />
+    <div class="login-card">
+      <h2>Авторизация</h2>
+      <p class="hint">Введите данные для доступа к системе</p>
 
-  <button type="submit">Login</button>
+      @if (error) {
+        <div class="error-banner">
+          Неверное имя пользователя или пароль
+        </div>
+      }
 
-  <p *ngIf="error" style="color: red">
-    Invalid credentials
-  </p>
-</form>
+      <div class="field">
+        <label for="username">Имя пользователя</label>
+        <input 
+          id="username"
+          type="text" 
+          [(ngModel)]="username" 
+          placeholder="Напр. admin"
+          (keyup.enter)="login()"
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Пароль</label>
+        <input 
+          id="password"
+          type="password" 
+          [(ngModel)]="password" 
+          placeholder="Введите пароль"
+          (keyup.enter)="login()"
+        />
+      </div>
+
+      <button class="btn-primary" (click)="login()">Войти</button>
+
+      <p class="demo">Тестовые данные: <strong>admin / admin</strong></p>
+    </div>
+  </div>
+</div>

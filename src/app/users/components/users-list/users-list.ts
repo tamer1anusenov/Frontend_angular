@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 import { UsersService } from '../../services/users';
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/user';
@@ -15,30 +15,25 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   styleUrl: './users-list.css',
 })
 export class UsersListComponent implements OnInit {
-  users: User[] = [];
-  loading = true;
-  error = false;
   newUserName = '';
   newUserEmail = '';
 
   searchControl = new FormControl('');
   filteredUsers: User[] = [];
 
-
-  constructor(private userService: UsersService) {}
+  constructor(public userService: UsersService) {
+    // Автоматически обновляем filteredUsers при изменении users
+    effect(() => {
+      const users = this.userService.users();
+      this.applyFilter(this.searchControl.value ?? '');
+    });
+  }
 
   ngOnInit(): void {
-    this.userService.getUsers().subscribe({
-      next: (users) => {
-        this.users = users;
-        this.filteredUsers = users;
-        this.loading = false;
-      },
-      error: () => {
-        this.error = true;
-        this.loading = false;
-      },
-    });
+    // Загружаем данные из сервиса
+    this.userService.loadUsers();
+    
+    // Подписываемся на изменения в поиске
     this.searchControl.valueChanges
     .pipe(
       debounceTime(200),
@@ -49,11 +44,11 @@ export class UsersListComponent implements OnInit {
     });
   }
 
-
   applyFilter(value: string): void{
     const search = value.toLowerCase();
+    const users = this.userService.users();
 
-    this.filteredUsers = this.users.filter( user =>
+    this.filteredUsers = users.filter( user =>
       user.name.toLowerCase().includes(search) || user.email.toLowerCase().includes(search)
     );
   }
@@ -67,12 +62,13 @@ export class UsersListComponent implements OnInit {
     };
 
     this.userService.addUser(user);
-    this.users.push(user);
     this.applyFilter(this.searchControl.value ?? '');
 
     this.newUserName = '';
     this.newUserEmail = '';
   }
 
-
+  trackById(index: number, user: User): number {
+    return user.id;
+  }
 }

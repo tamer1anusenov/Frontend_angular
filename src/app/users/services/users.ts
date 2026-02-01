@@ -51,4 +51,11 @@ export class UsersService {
     const localOnly = this.users().filter(u => u.id > 1000000000000);
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(localOnly));
   }
+
+  deleteUser(id: number): void {
+    this.users.update(users => 
+      users.filter(user => user.id !== id)
+    );
+    this.saveToLocalStorage();
+  }
 }
